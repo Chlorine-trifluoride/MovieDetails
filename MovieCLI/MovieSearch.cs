@@ -21,6 +21,9 @@ namespace MovieCLI
             PrintInstructions();
             string searchString = Console.ReadLine();
 
+            if (searchString == string.Empty)
+                return;
+
             if (!SearchForMovieLocal(searchString)!)
             {
                 Console.WriteLine("Movie not found in cache, starting a OMDB search");
@@ -58,13 +61,15 @@ namespace MovieCLI
 
             if (movieQuery.Count() > 0)
             {
+                Console.WriteLine($"Found {movieQuery.Count()} partial match(es)");
+
                 foreach (Movie movie in movieQuery)
                 {
-                    Console.WriteLine($"Found {movieQuery.Count()} partial matches");
-                    PrintMovieInfo(movie, true);
+                    PrintMovieInfo(movie, false);
                     Console.WriteLine("-----");
-                    return true;
                 }
+
+                return true;
             }
 
             return false;
@@ -107,19 +112,20 @@ namespace MovieCLI
             PrintMovieInfo(movie, addedToCache);
         }
 
-        private void PrintMovieInfo(Movie movie, bool foundInCache = false)
+        private void PrintMovieInfo(Movie movie, bool addedToCache = false)
         {
-            if (foundInCache)
-                Console.WriteLine("== Movie found in local cache ==");
+            if (addedToCache)
+                Console.WriteLine("== Movie added to local cache ==");
 
             else
-                Console.WriteLine("== Movie added to local cache ==");
+                Console.WriteLine("== Movie found in local cache ==");
+
 
             PrintAllFieldsUsingReflection(movie);
 
             Console.WriteLine("=========");
             Console.WriteLine("Press any key to continue");
-            Console.ReadKey();
+            Console.ReadKey(true);
         }
 
         private void PrintAllFieldsUsingReflection(Movie movie)
