@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Reflection;
 
 namespace MovieCLI
 {
@@ -114,13 +115,21 @@ namespace MovieCLI
             else
                 Console.WriteLine("== Movie added to local cache ==");
 
-            Console.WriteLine(movie.TitleYear);
-            Console.WriteLine(movie.Plot);
-            Console.WriteLine(movie.Metascore);
+            PrintAllFieldsUsingReflection(movie);
 
             Console.WriteLine("=========");
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
+        }
+
+        private void PrintAllFieldsUsingReflection(Movie movie)
+        {
+            PropertyInfo[] properties = movie.GetType().GetProperties();
+
+            foreach (PropertyInfo prop in properties)
+            {
+                Console.WriteLine($"{prop.Name}: {prop.GetValue(movie)?.ToString()}");
+            }
         }
     }
 }
