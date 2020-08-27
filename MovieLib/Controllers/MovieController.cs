@@ -33,7 +33,7 @@ namespace MovieLib
 
             // Deseriliaze the string to a list object in memory
 
-            try
+            try // The JSON file might be empty or corrupted
             {
                 cachedMovies = JsonSerializer.Deserialize<List<Movie>>(jsonString);
             }
