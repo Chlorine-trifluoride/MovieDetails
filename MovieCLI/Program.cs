@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using MovieLib;
 
 namespace MovieCLI
 {
@@ -6,7 +8,15 @@ namespace MovieCLI
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            MovieController movieController = new MovieController();
+            movieController.AddCachedDummyMovies();
+
+            List<Movie> cachedMovies = movieController.GetCachedMovies();
+
+            for (int i = 0; i < cachedMovies.Count; i++)
+            {
+                Console.WriteLine(cachedMovies[i].IDTitle);
+            }
         }
     }
 }
