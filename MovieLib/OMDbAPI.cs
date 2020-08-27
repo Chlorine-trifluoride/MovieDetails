@@ -8,7 +8,7 @@ namespace MovieLib
 {
     public class OMDbAPI
     {
-        private const string API_URL = @"http://www.omdbapi.com/?apikey=";
+        private const string API_URL = @"https://www.omdbapi.com/?apikey=";
         private const string API_KEY = "b40e1a65"; // please do not abuse my api key
 
         private static string searchByTitleURL => $"{API_URL}{API_KEY}&t=";
