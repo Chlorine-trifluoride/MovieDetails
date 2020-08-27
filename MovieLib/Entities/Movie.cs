@@ -52,7 +52,10 @@ namespace MovieLib
         public string Response { get; set; }
         #endregion
 
+        [JsonIgnore]
         public string TitleYear => $"{Title} ({Year})";
+
+        [JsonIgnore]
         public string IDTitle => $"{ID}: {Title}";
     }
 }
