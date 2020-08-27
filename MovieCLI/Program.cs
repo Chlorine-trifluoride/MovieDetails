@@ -20,8 +20,9 @@ namespace MovieCLI
         static void PrintMenu()
         {
             Console.Clear();
-            Console.WriteLine("1) AddAndPrintDummyMovies");
-            Console.WriteLine("2) Search for a movie");
+            Console.WriteLine("1) Search for a movie");
+            Console.WriteLine("2) Print Cached Movie List");
+            Console.WriteLine("3) Add Dummy movies");
             Console.WriteLine("Q) Quit program");
 
             while (true)
@@ -29,11 +30,15 @@ namespace MovieCLI
                 switch (Console.ReadKey(true).Key)
                 {
                     case ConsoleKey.D1:
-                        AddPrintDummyMovies();
+                        SearchForMovie();
                         return;
 
                     case ConsoleKey.D2:
-                        SearchForMovie();
+                        AddPrintDummyMovies();
+                        return;
+
+                    case ConsoleKey.D3:
+                        AddDummyMovies();
                         return;
 
                     case ConsoleKey.Q:
@@ -50,11 +55,14 @@ namespace MovieCLI
             movieSearch.Run();
         }
 
+        static void AddDummyMovies()
+        {
+            movieController.AddCachedDummyMovies();
+        }
+
         static void AddPrintDummyMovies()
         {
             Console.Clear();
-
-            movieController.AddCachedDummyMovies();
 
             List<Movie> cachedMovies = movieController.GetCachedMovies();
 
