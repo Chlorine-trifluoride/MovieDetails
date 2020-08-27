@@ -8,7 +8,7 @@ namespace MovieLib
 {
     public class Movie
     {
-        #region JSON
+        #region MODEL
         [Key]
         [JsonPropertyName("id")]
         public int ID { get; set; }
@@ -53,5 +53,6 @@ namespace MovieLib
         #endregion
 
         public string TitleYear => $"{Title} ({Year})";
+        public string IDTitle => $"{ID}: {Title}";
     }
 }
