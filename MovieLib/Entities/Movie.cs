@@ -40,16 +40,16 @@ namespace MovieLib
         // ratings?
 
         [JsonPropertyName("Metascore")]
-        public int Metascore { get; set; }
+        public string Metascore { get; set; }
 
         [JsonPropertyName("imdbID")]
-        public int IMDBID { get; set; }
+        public string IMDBID { get; set; }
 
         [JsonPropertyName("BoxOffice")]
         public string BoxOffice { get; set; }
 
         [JsonPropertyName("Response")]
-        public bool Response { get; set; }
+        public string Response { get; set; }
         #endregion
 
         public string TitleYear => $"{Title} ({Year})";
