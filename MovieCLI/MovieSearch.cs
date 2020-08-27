@@ -35,16 +35,35 @@ namespace MovieCLI
 
         private bool SearchForMovieLocal(string searchString)
         {
+            searchString = searchString.ToLower();  // Ignore case
+
             List<Movie> cachedMovies = movieController.GetCachedMovies();
 
+            // Search for exact match
             var movieQuery = from mov in cachedMovies
-                    where mov.Title.ToLower() == searchString.ToLower()
+                    where mov.Title.ToLower() == searchString
                     select mov;
 
             if (movieQuery.Count() > 0)
             {
                 PrintMovieInfo(movieQuery.First(), true);
                 return true;
+            }
+
+            // Search for partial matches
+            movieQuery = from mov in cachedMovies
+                             where mov.Title.ToLower().Contains(searchString)
+                             select mov;
+
+            if (movieQuery.Count() > 0)
+            {
+                foreach (Movie movie in movieQuery)
+                {
+                    Console.WriteLine($"Found {movieQuery.Count()} partial matches");
+                    PrintMovieInfo(movie, true);
+                    Console.WriteLine("-----");
+                    return true;
+                }
             }
 
             return false;

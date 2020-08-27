@@ -34,7 +34,7 @@ namespace MovieCLI
                         return;
 
                     case ConsoleKey.D2:
-                        AddPrintDummyMovies();
+                        PrintMovieCache();
                         return;
 
                     case ConsoleKey.D3:
@@ -60,7 +60,7 @@ namespace MovieCLI
             movieController.AddCachedDummyMovies();
         }
 
-        static void AddPrintDummyMovies()
+        static void PrintMovieCache()
         {
             Console.Clear();
 
@@ -68,7 +68,8 @@ namespace MovieCLI
 
             for (int i = 0; i < cachedMovies.Count; i++)
             {
-                Console.WriteLine(cachedMovies[i].IDTitle);
+                Movie m = cachedMovies[i];
+                Console.WriteLine($"{m.ID}: {m.TitleYear}");
             }
 
             Console.WriteLine("Press any key to...");

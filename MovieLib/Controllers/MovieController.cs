@@ -98,11 +98,12 @@ namespace MovieLib
         }
 
         /// <summary> Creates and adds a Movie object with minimal info
-        public void AddCachedMovie(string title, string plot, string runtime)
+        public void AddCachedMovie(string title, string year, string plot, string runtime)
         {
             Movie movie = new Movie
             {
                 Title = title,
+                Year = year,
                 Plot = plot,
                 Runtime = runtime
             };
@@ -112,8 +113,8 @@ namespace MovieLib
 
         public void AddCachedDummyMovies()
         {
-            AddCachedMovie("Demo", "Things happen", "120 minutes");
-            AddCachedMovie("Test", "Lorem ipsum", "60 minutes");
+            AddCachedMovie("Fake Movie", "1985", "Things happen", "120 minutes");
+            AddCachedMovie("Horrible Movie", "2001", "Lorem ipsum", "60 minutes");
         }
     }
 }
