@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace MovieCLI
 {
@@ -17,7 +18,13 @@ namespace MovieCLI
         public void Run()
         {
             PrintInstructions();
-            SearchForMovie();
+            string searchString = Console.ReadLine();
+
+            if (!SearchForMovieLocal(searchString)!)
+            {
+                Console.WriteLine("Movie not found in cache, starting a OMDB search");
+                SearchForMovieRemote(searchString);
+            }
         }
 
         private void PrintInstructions()
@@ -26,9 +33,25 @@ namespace MovieCLI
             Console.WriteLine("Search for a movies by Title");
         }
 
-        private void SearchForMovie()
+        private bool SearchForMovieLocal(string searchString)
         {
-            string searchString = Console.ReadLine();
+            List<Movie> cachedMovies = movieController.GetCachedMovies();
+
+            var movieQuery = from mov in cachedMovies
+                    where mov.Title.ToLower() == searchString.ToLower()
+                    select mov;
+
+            if (movieQuery.Count() > 0)
+            {
+                PrintMovieInfo(movieQuery.First(), true);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void SearchForMovieRemote(string searchString)
+        {
             List<Movie> movies = OMDbAPI.SearchForMoviesByTitle(searchString);
 
             for (int i = 0; i < movies.Count; i++)
@@ -54,7 +77,24 @@ namespace MovieCLI
 
         private void LoadInfoForMovie(Movie movie)
         {
+            // Load movie from OMDB
             movie = OMDbAPI.GetMovieByImdbID(movie.IMDBID);
+
+            // Add movie to local cache
+            bool addedToCache = false;
+            addedToCache = movieController.AddCachedMovie(movie);
+
+            PrintMovieInfo(movie, addedToCache);
+        }
+
+        private void PrintMovieInfo(Movie movie, bool foundInCache = false)
+        {
+            if (foundInCache)
+                Console.WriteLine("== Movie found in local cache ==");
+
+            else
+                Console.WriteLine("== Movie added to local cache ==");
+
             Console.WriteLine(movie.TitleYear);
             Console.WriteLine(movie.Plot);
             Console.WriteLine(movie.Metascore);
