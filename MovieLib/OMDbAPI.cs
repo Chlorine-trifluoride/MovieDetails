@@ -8,6 +8,7 @@ namespace MovieLib
 {
     public class OMDbAPI
     {
+        private const string TEST_URL = @"https://www.omdbapi.com";
         private const string API_URL = @"https://www.omdbapi.com/?apikey=";
         private const string API_KEY = "b40e1a65"; // please do not abuse my api key
 
@@ -17,25 +18,58 @@ namespace MovieLib
 
 
         /// <summary>
+        /// Test connection, is a firewall blocking us?
+        /// </summary>
+        /// <returns>bool success and any thrown exception</returns>
+        public static (bool, Exception) TestConnection()
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    string url = TEST_URL;
+                    using (var response = httpClient.GetAsync(url).Result)
+                    {
+                        if (!response.IsSuccessStatusCode)
+                            return (false, null); // Server error occured
+
+                        return (true, null);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return (false, e);
+            }
+        }
+
+        /// <summary>
         /// Get one movie by searching for the title without any sorting
         /// </summary>
         /// <param name="title">Movie Title</param>
         /// <returns>A movie with a matching title that could be the wrong movie</returns>
         public static Movie SearchForMovieByTitle(string title)
         {
-            Movie movie;
+            Movie movie = null;
 
-            using (HttpClient httpClient = new HttpClient())
+            try
             {
-                string url = $"{searchByTitleURL}{title}";
-                using (var response = httpClient.GetAsync(url).Result)
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    if (!response.IsSuccessStatusCode)
-                        return null; // Server error occured
+                    string url = $"{searchByTitleURL}{title}";
+                    using (var response = httpClient.GetAsync(url).Result)
+                    {
+                        if (!response.IsSuccessStatusCode)
+                            return null; // Server error occured
 
-                    string apiResponse = response.Content.ReadAsStringAsync().Result;
-                    movie = JsonSerializer.Deserialize<Movie>(apiResponse);
+                        string apiResponse = response.Content.ReadAsStringAsync().Result;
+                        movie = JsonSerializer.Deserialize<Movie>(apiResponse);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                ErrorManager.PrintConnectionError(e);
             }
 
             return movie;
@@ -48,19 +82,26 @@ namespace MovieLib
         /// <returns>A list of movies</returns>
         public static List<Movie> SearchForMoviesByTitle(string title)
         {
-            List<Movie> movies;
+            List<Movie> movies = null;
 
-            using (HttpClient httpClient = new HttpClient())
+            try
             {
-                string url = $"{searchForTitlesURL}{title}";
-                using (var response = httpClient.GetAsync(url).Result)
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    if (!response.IsSuccessStatusCode)
-                        return null; // Server error occured
+                    string url = $"{searchForTitlesURL}{title}";
+                    using (var response = httpClient.GetAsync(url).Result)
+                    {
+                        if (!response.IsSuccessStatusCode)
+                            return null; // Server error occured
 
-                    string apiResponse = response.Content.ReadAsStringAsync().Result;
-                    movies = JsonSerializer.Deserialize<MovieSearch>(apiResponse).ResultMovies;
+                        string apiResponse = response.Content.ReadAsStringAsync().Result;
+                        movies = JsonSerializer.Deserialize<MovieSearch>(apiResponse).ResultMovies;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                ErrorManager.PrintConnectionError(e);
             }
 
             return movies;
@@ -73,19 +114,26 @@ namespace MovieLib
         /// <returns>A movie matching the imdbID</returns>
         public static Movie GetMovieByImdbID(string imdbID)
         {
-            Movie movie;
+            Movie movie = null;
 
-            using (HttpClient httpClient = new HttpClient())
+            try
             {
-                string url = $"{searchByIMDB}{imdbID}";
-                using (var response = httpClient.GetAsync(url).Result)
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    if (!response.IsSuccessStatusCode)
-                        return null; // Server error occured
+                    string url = $"{searchByIMDB}{imdbID}";
+                    using (var response = httpClient.GetAsync(url).Result)
+                    {
+                        if (!response.IsSuccessStatusCode)
+                            return null; // Server error occured
 
-                    string apiResponse = response.Content.ReadAsStringAsync().Result;
-                    movie = JsonSerializer.Deserialize<Movie>(apiResponse);
+                        string apiResponse = response.Content.ReadAsStringAsync().Result;
+                        movie = JsonSerializer.Deserialize<Movie>(apiResponse);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                ErrorManager.PrintConnectionError(e);
             }
 
             return movie;

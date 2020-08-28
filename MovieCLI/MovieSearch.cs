@@ -24,11 +24,45 @@ namespace MovieCLI
             if (searchString == string.Empty)
                 return;
 
-            if (!SearchForMovieLocal(searchString)!)
+            List<Movie> foundMovies = SearchForMoviesLocal(searchString);
+
+            if (foundMovies is null)
             {
                 Console.WriteLine("Movie not found in cache, starting a OMDB search");
-                SearchForMovieRemote(searchString);
+                foundMovies = SearchForMovieRemote(searchString);
             }
+
+            if (foundMovies is null)
+            {   // We didnt find any locally or in OMDB
+                Console.WriteLine("No movies matching your search string were found =(");
+                Console.WriteLine("Press any key to...");
+                Console.ReadKey(true);
+            }
+
+            // Movies found, present user with a selection screen
+
+        }
+
+        private void PresetUserWithMovieOptions(List<Movie> movies)
+        {
+            for (int i = 0; i < movies.Count; i++)
+            {
+                Console.WriteLine($"{i}\t{movies[i].TitleYear}");
+            }
+
+            Console.WriteLine("============");
+            Console.WriteLine("Enter the ID of the movie you wish to show full info for.");
+
+            // Select the specific movie and get the info
+            string input = Console.ReadLine();
+            if (int.TryParse(input, out int selection)
+                && selection >= 0 && selection < movies.Count)
+            {
+                PrintMovieInfo(movies[selection]);
+            }
+
+            else
+                Console.WriteLine("Invalid input");
         }
 
         private void PrintInstructions()
@@ -37,7 +71,7 @@ namespace MovieCLI
             Console.WriteLine("Search for a movies by Title");
         }
 
-        private bool SearchForMovieLocal(string searchString)
+        private List<Movie> SearchForMoviesLocal(string searchString)
         {
             searchString = searchString.ToLower();  // Ignore case
 
@@ -50,8 +84,8 @@ namespace MovieCLI
 
             if (movieQuery.Count() > 0)
             {
-                PrintMovieInfo(movieQuery.First(), true);
-                return true;
+                PrintMovieInfo(movieQuery.First());
+                return movieQuery.ToList();
             }
 
             // Search for partial matches
@@ -65,31 +99,27 @@ namespace MovieCLI
 
                 foreach (Movie movie in movieQuery)
                 {
-                    PrintMovieInfo(movie, false);
+                    PrintMovieInfo(movie);
                     Console.WriteLine("-----");
                 }
 
-                return true;
+                return movieQuery.ToList();
             }
 
-            return false;
+            return null;
         }
 
-        private void SearchForMovieRemote(string searchString)
+        private List<Movie> SearchForMovieRemote(string searchString)
         {
             List<Movie> movies = OMDbAPI.SearchForMoviesByTitle(searchString);
 
             if (movies is null) // no movies found
             {
-                Console.WriteLine("No movies matching your search string were found =(");
-                Console.WriteLine("Press any key to...");
-                Console.ReadKey(true);
-                return;
+                return null;
             }
 
             for (int i = 0; i < movies.Count; i++)
             {
-
                 Console.WriteLine($"{i}\t{movies[i].TitleYear}");
             }
 
@@ -101,34 +131,28 @@ namespace MovieCLI
             if (int.TryParse(input, out int selection)
                 && selection >= 0 && selection < movies.Count)
             {
-                    LoadInfoForMovie(movies[selection]);
+                Movie m = LoadInfoForMovie(movies[selection]);  // Load the Movie from OMDB
+                movieController.AddCachedMovie(m);              // Add Movie to local cache
+                Console.WriteLine($"{m.TitleYear} added to local cache");
+                List<Movie> output = new List<Movie>();         // Create a new list to return
+                output.Add(m);                                  // add single movie to the list
+                return output;                                  // return the list with a single movie element
             }
 
             else
                 Console.WriteLine("Invalid input");
+
+            return null;
         }
 
-        private void LoadInfoForMovie(Movie movie)
+        private Movie LoadInfoForMovie(Movie movie)
         {
             // Load movie from OMDB
-            movie = OMDbAPI.GetMovieByImdbID(movie.IMDBID);
-
-            // Add movie to local cache
-            bool addedToCache = false;
-            addedToCache = movieController.AddCachedMovie(movie);
-
-            PrintMovieInfo(movie, addedToCache);
+            return OMDbAPI.GetMovieByImdbID(movie.IMDBID);
         }
 
-        private void PrintMovieInfo(Movie movie, bool addedToCache = false)
+        private void PrintMovieInfo(Movie movie)
         {
-            if (addedToCache)
-                Console.WriteLine("== Movie added to local cache ==");
-
-            else
-                Console.WriteLine("== Movie found in local cache ==");
-
-
             PrintAllFieldsUsingReflection(movie);
 
             Console.WriteLine("=========");

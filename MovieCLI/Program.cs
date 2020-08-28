@@ -23,6 +23,7 @@ namespace MovieCLI
             Console.WriteLine("1) Search for a movie");
             Console.WriteLine("2) Print Cached Movie List");
             Console.WriteLine("3) Add Dummy movies");
+            Console.WriteLine("4) Test OMDB Connection");
             Console.WriteLine("Q) Quit program");
 
             while (true)
@@ -41,12 +42,32 @@ namespace MovieCLI
                         AddDummyMovies();
                         return;
 
+                    case ConsoleKey.D4:
+                        TestConnection();
+                        return;
+
                     case ConsoleKey.Q:
                     case ConsoleKey.E:
                         quit = true;
                         return;
                 }
             }
+        }
+
+        static void TestConnection()
+        {
+            (bool success, Exception e) = OMDbAPI.TestConnection();
+
+            if (success)
+                Console.WriteLine("Connection established");
+
+            else
+            {
+                ErrorManager.PrintConnectionError(e);
+            }
+
+            Console.WriteLine("==== Press any key to... ====");
+            Console.ReadKey(true);
         }
 
         static void SearchForMovie()
