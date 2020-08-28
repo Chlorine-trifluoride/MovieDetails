@@ -18,13 +18,21 @@ namespace MovieCLI
 
         public void Run()
         {
+            DoMovieSearch();
+        }
+
+        private void DoMovieSearch(bool includeLocal = true)
+        {
             PrintInstructions();
             string searchString = Console.ReadLine();
 
             if (searchString == string.Empty)
                 return;
 
-            List<Movie> foundMovies = SearchForMoviesLocal(searchString);
+            List<Movie> foundMovies = null;
+
+            if (includeLocal) // Search local cache?
+                foundMovies = SearchForMoviesLocal(searchString);
 
             if (foundMovies is null)
             {
@@ -40,14 +48,33 @@ namespace MovieCLI
             }
 
             // Movies found, present user with a selection screen
-
+            if (foundMovies?.Count() > 0)
+                PresentUserWithMovieOptions(foundMovies);
         }
 
-        private void PresetUserWithMovieOptions(List<Movie> movies)
+        private bool PresentYesNoQuestion(string question)
+        {
+            Console.WriteLine($"{question} Y/N?");
+
+            if (Console.ReadKey(true).Key == ConsoleKey.Y)
+                return true;
+
+            return false;
+        }
+
+        private void PresentUserWithMovieOptions(List<Movie> movies)
         {
             for (int i = 0; i < movies.Count; i++)
             {
                 Console.WriteLine($"{i}\t{movies[i].TitleYear}");
+            }
+
+            if (!PresentYesNoQuestion("Is your movie in this list?"))
+            {
+                if (PresentYesNoQuestion("Do you want to search OMDB for a movie title?"))
+                    DoMovieSearch(false); // Only search OMDB
+
+                return;
             }
 
             Console.WriteLine("============");
@@ -73,24 +100,23 @@ namespace MovieCLI
 
         private List<Movie> SearchForMoviesLocal(string searchString)
         {
-            searchString = searchString.ToLower();  // Ignore case
+            searchString = searchString.ToLower().StripDiacritics();  // Ignore case
 
             List<Movie> cachedMovies = movieController.GetCachedMovies();
 
             // Search for exact match
             var movieQuery = from mov in cachedMovies
-                    where mov.Title.ToLower() == searchString
+                    where mov.Title.ToLower().StripDiacritics() == searchString
                     select mov;
 
             if (movieQuery.Count() > 0)
             {
-                PrintMovieInfo(movieQuery.First());
                 return movieQuery.ToList();
             }
 
             // Search for partial matches
             movieQuery = from mov in cachedMovies
-                             where mov.Title.ToLower().Contains(searchString)
+                             where mov.Title.ToLower().StripDiacritics().Contains(searchString)
                              select mov;
 
             if (movieQuery.Count() > 0)
@@ -99,7 +125,6 @@ namespace MovieCLI
 
                 foreach (Movie movie in movieQuery)
                 {
-                    PrintMovieInfo(movie);
                     Console.WriteLine("-----");
                 }
 
@@ -121,6 +146,11 @@ namespace MovieCLI
             for (int i = 0; i < movies.Count; i++)
             {
                 Console.WriteLine($"{i}\t{movies[i].TitleYear}");
+            }
+
+            if (!PresentYesNoQuestion("Is your movie in this list?"))
+            {
+                return null;
             }
 
             Console.WriteLine("============");
