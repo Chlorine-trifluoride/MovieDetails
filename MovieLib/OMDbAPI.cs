@@ -23,23 +23,16 @@ namespace MovieLib
         /// <returns>bool success and any thrown exception</returns>
         public static (bool, Exception) TestConnection()
         {
-            try
+            using (SafeHttpClient httpClient = new SafeHttpClient())
             {
-                using (HttpClient httpClient = new HttpClient())
+                string url = TEST_URL;
+                using (var response = httpClient.GetAsync(url).Result)
                 {
-                    string url = TEST_URL;
-                    using (var response = httpClient.GetAsync(url).Result)
-                    {
-                        if (!response.IsSuccessStatusCode)
-                            return (false, null); // Server error occured
+                    if (!response.IsSuccessStatusCode)
+                        return (false, null); // Server error occured
 
-                        return (true, null);
-                    }
+                    return (true, null);
                 }
-            }
-            catch (Exception e)
-            {
-                return (false, e);
             }
         }
 
@@ -52,24 +45,17 @@ namespace MovieLib
         {
             Movie movie = null;
 
-            try
+            using (SafeHttpClient httpClient = new SafeHttpClient())
             {
-                using (HttpClient httpClient = new HttpClient())
+                string url = $"{searchByTitleURL}{title}";
+                using (var response = httpClient.GetAsync(url).Result)
                 {
-                    string url = $"{searchByTitleURL}{title}";
-                    using (var response = httpClient.GetAsync(url).Result)
-                    {
-                        if (!response.IsSuccessStatusCode)
-                            return null; // Server error occured
+                    if (!response.IsSuccessStatusCode)
+                        return null; // Server error occured
 
-                        string apiResponse = response.Content.ReadAsStringAsync().Result;
-                        movie = JsonSerializer.Deserialize<Movie>(apiResponse);
-                    }
+                    string apiResponse = response.Content.ReadAsStringAsync().Result;
+                    movie = JsonSerializer.Deserialize<Movie>(apiResponse);
                 }
-            }
-            catch (Exception e)
-            {
-                ErrorManager.PrintConnectionError(e);
             }
 
             return movie;
@@ -84,24 +70,17 @@ namespace MovieLib
         {
             List<Movie> movies = null;
 
-            try
+            using (SafeHttpClient httpClient = new SafeHttpClient())
             {
-                using (HttpClient httpClient = new HttpClient())
+                string url = $"{searchForTitlesURL}{title}";
+                using (var response = httpClient.GetAsync(url).Result)
                 {
-                    string url = $"{searchForTitlesURL}{title}";
-                    using (var response = httpClient.GetAsync(url).Result)
-                    {
-                        if (!response.IsSuccessStatusCode)
-                            return null; // Server error occured
+                    if (!response.IsSuccessStatusCode)
+                        return null; // Server error occured
 
-                        string apiResponse = response.Content.ReadAsStringAsync().Result;
-                        movies = JsonSerializer.Deserialize<MovieSearch>(apiResponse).ResultMovies;
-                    }
+                    string apiResponse = response.Content.ReadAsStringAsync().Result;
+                    movies = JsonSerializer.Deserialize<MovieSearch>(apiResponse).ResultMovies;
                 }
-            }
-            catch (Exception e)
-            {
-                ErrorManager.PrintConnectionError(e);
             }
 
             return movies;
@@ -116,24 +95,17 @@ namespace MovieLib
         {
             Movie movie = null;
 
-            try
+            using (SafeHttpClient httpClient = new SafeHttpClient())
             {
-                using (HttpClient httpClient = new HttpClient())
+                string url = $"{searchByIMDB}{imdbID}";
+                using (var response = httpClient.GetAsync(url).Result)
                 {
-                    string url = $"{searchByIMDB}{imdbID}";
-                    using (var response = httpClient.GetAsync(url).Result)
-                    {
-                        if (!response.IsSuccessStatusCode)
-                            return null; // Server error occured
+                    if (!response.IsSuccessStatusCode)
+                        return null; // Server error occured
 
-                        string apiResponse = response.Content.ReadAsStringAsync().Result;
-                        movie = JsonSerializer.Deserialize<Movie>(apiResponse);
-                    }
+                    string apiResponse = response.Content.ReadAsStringAsync().Result;
+                    movie = JsonSerializer.Deserialize<Movie>(apiResponse);
                 }
-            }
-            catch (Exception e)
-            {
-                ErrorManager.PrintConnectionError(e);
             }
 
             return movie;
