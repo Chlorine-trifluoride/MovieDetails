@@ -79,6 +79,14 @@ namespace MovieCLI
         {
             List<Movie> movies = OMDbAPI.SearchForMoviesByTitle(searchString);
 
+            if (movies is null) // no movies found
+            {
+                Console.WriteLine("No movies matching your search string were found =(");
+                Console.WriteLine("Press any key to...");
+                Console.ReadKey(true);
+                return;
+            }
+
             for (int i = 0; i < movies.Count; i++)
             {
 
