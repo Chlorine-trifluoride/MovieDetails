@@ -54,7 +54,9 @@ namespace MovieCLI
 
         private bool PresentYesNoQuestion(string question)
         {
+            Console.ForegroundColor = ConsoleColor.Red;     // Highlight the yes no question
             Console.WriteLine($"{question} Y/N?");
+            Console.ForegroundColor = ConsoleColor.White;   // Restore text color
 
             if (Console.ReadKey(true).Key == ConsoleKey.Y)
                 return true;
