@@ -56,14 +56,14 @@ namespace MovieCLI
 
         static void TestConnection()
         {
-            (bool success, Exception e) = OMDbAPI.TestConnection();
+            bool success = OMDbAPI.TestConnection();
 
             if (success)
                 Console.WriteLine("Connection established");
 
             else
             {
-                ErrorManager.PrintConnectionError(e);
+                Console.WriteLine("Connection failure");
             }
 
             Console.WriteLine("==== Press any key to... ====");

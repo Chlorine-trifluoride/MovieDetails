@@ -21,7 +21,7 @@ namespace MovieLib
         /// Test connection, is a firewall blocking us?
         /// </summary>
         /// <returns>bool success and any thrown exception</returns>
-        public static (bool, Exception) TestConnection()
+        public static bool TestConnection()
         {
             using (SafeHttpClient httpClient = new SafeHttpClient())
             {
@@ -29,9 +29,9 @@ namespace MovieLib
                 using (var response = httpClient.GetAsync(url).Result)
                 {
                     if (!response.IsSuccessStatusCode)
-                        return (false, null); // Server error occured
+                        return false; // Server error occured
 
-                    return (true, null);
+                    return true;
                 }
             }
         }
@@ -105,6 +105,9 @@ namespace MovieLib
 
                     string apiResponse = response.Content.ReadAsStringAsync().Result;
                     movie = JsonSerializer.Deserialize<Movie>(apiResponse);
+
+                    if (movie.Title is null)    // the json did not contain a movie
+                        return null;            // possibly invalid IMDB ID
                 }
             }
 
