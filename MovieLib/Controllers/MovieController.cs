@@ -46,6 +46,7 @@ namespace MovieLib
             {
                 // TODO: Add a debugger
                 Console.WriteLine($"Invalid JSON: {e.Message}");
+                return null;
             }
 
             isMemCacheLoaded = true;
@@ -115,6 +116,11 @@ namespace MovieLib
         {
             AddCachedMovie("Fake Movie", "1985", "Things happen", "120 minutes");
             AddCachedMovie("Horrible Movie", "2001", "Lorem ipsum", "60 minutes");
+        }
+
+        public void ClearCache()
+        {
+            File.Delete(DB_PATH);
         }
     }
 }
