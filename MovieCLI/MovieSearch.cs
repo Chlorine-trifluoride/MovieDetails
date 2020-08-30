@@ -124,12 +124,6 @@ namespace MovieCLI
             if (movieQuery.Count() > 0)
             {
                 Console.WriteLine($"Found {movieQuery.Count()} partial match(es)");
-
-                foreach (Movie movie in movieQuery)
-                {
-                    Console.WriteLine("-----");
-                }
-
                 return movieQuery.ToList();
             }
 
