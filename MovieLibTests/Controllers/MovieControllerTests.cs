@@ -3,6 +3,7 @@ using MovieLib;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MovieLib.Tests
 {
@@ -16,17 +17,17 @@ namespace MovieLib.Tests
         }
 
         [TestMethod()]
-        public void GetCachedMoviesTest()
+        public async Task GetCachedMoviesTest()
         {
             MovieController movieController = new MovieController();
-            List<Movie> movies = movieController.GetCachedMovies();
+            List<Movie> movies = await movieController.GetCachedMovies();
 
             // Assuming the json file does not exists, this should reutrn null
             Assert.IsNull(movies);
         }
 
         [TestMethod()]
-        public void AddCachedMovieTest()
+        public async Task AddCachedMovieTest()
         {
             MovieController movieController = new MovieController();
 
@@ -41,8 +42,8 @@ namespace MovieLib.Tests
             };
 
             // Should return true for the first time the same movie is added, false the 2nd time
-            Assert.IsTrue(movieController.AddCachedMovie(testMovie1));
-            Assert.IsFalse(movieController.AddCachedMovie(testMovie2));
+            Assert.IsTrue(await movieController.AddCachedMovie(testMovie1));
+            Assert.IsFalse(await movieController.AddCachedMovie(testMovie2));
 
             // Clear the test cache
             A1ClearCacheTest();

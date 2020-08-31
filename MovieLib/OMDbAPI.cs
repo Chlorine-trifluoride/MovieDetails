@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace MovieLib
 {
@@ -24,10 +25,10 @@ namespace MovieLib
         /// Test connection, is a firewall blocking us?
         /// </summary>
         /// <returns>bool success and any thrown exception</returns>
-        public static bool TestConnection()
+        public static async Task<bool> TestConnection()
         {
             string url = TEST_URL;
-            using (var response = httpClient.GetAsync(url).Result)
+            using (var response = await httpClient.GetAsync(url))
             {
                 if (!response.IsSuccessStatusCode)
                     return false; // Server error occured
@@ -41,17 +42,17 @@ namespace MovieLib
         /// </summary>
         /// <param name="title">Movie Title</param>
         /// <returns>A movie with a matching title that could be the wrong movie</returns>
-        public static Movie SearchForMovieByTitle(string title)
+        public static async Task<Movie> SearchForMovieByTitle(string title)
         {
             Movie movie = null;
 
             string url = $"{searchByTitleURL}{title}";
-            using (var response = httpClient.GetAsync(url).Result)
+            using (var response = await httpClient.GetAsync(url))
             {
                 if (!response.IsSuccessStatusCode)
                     return null; // Server error occured
 
-                string apiResponse = response.Content.ReadAsStringAsync().Result;
+                string apiResponse = await response.Content.ReadAsStringAsync();
                 movie = JsonSerializer.Deserialize<Movie>(apiResponse);
             }
 
@@ -63,17 +64,17 @@ namespace MovieLib
         /// </summary>
         /// <param name="title">Movie Title</param>
         /// <returns>A list of movies</returns>
-        public static List<Movie> SearchForMoviesByTitle(string title)
+        public static async Task<List<Movie>> SearchForMoviesByTitle(string title)
         {
             List<Movie> movies = null;
 
             string url = $"{searchForTitlesURL}{title}";
-            using (var response = httpClient.GetAsync(url).Result)
+            using (var response = await httpClient.GetAsync(url))
             {
                 if (!response.IsSuccessStatusCode)
                     return null; // Server error occured
 
-                string apiResponse = response.Content.ReadAsStringAsync().Result;
+                string apiResponse = await response.Content.ReadAsStringAsync();
                 movies = JsonSerializer.Deserialize<MovieSearch>(apiResponse).ResultMovies;
             }
 
@@ -85,17 +86,17 @@ namespace MovieLib
         /// </summary>
         /// <param name="imdbID">Valid IMDB movie ID</param>
         /// <returns>A movie matching the imdbID</returns>
-        public static Movie GetMovieByImdbID(string imdbID)
+        public static async Task<Movie> GetMovieByImdbID(string imdbID)
         {
             Movie movie = null;
 
             string url = $"{searchByIMDB}{imdbID}";
-            using (var response = httpClient.GetAsync(url).Result)
+            using (var response = await httpClient.GetAsync(url))
             {
                 if (!response.IsSuccessStatusCode)
                     return null; // Server error occured
 
-                string apiResponse = response.Content.ReadAsStringAsync().Result;
+                string apiResponse = await response.Content.ReadAsStringAsync();
                 movie = JsonSerializer.Deserialize<Movie>(apiResponse);
 
                 if (movie.Title is null)    // the json did not contain a movie

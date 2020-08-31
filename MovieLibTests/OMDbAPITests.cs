@@ -3,6 +3,7 @@ using MovieLib;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MovieLib.Tests
 {
@@ -10,22 +11,22 @@ namespace MovieLib.Tests
     public class OMDbAPITests
     {
         [TestMethod()]
-        public void TestConnectionTest()
+        public async Task TestConnectionTest()
         {
-            Assert.IsTrue(OMDbAPI.TestConnection(), "Testing connection to OMDB failed");
+            Assert.IsTrue(await OMDbAPI.TestConnection(), "Testing connection to OMDB failed");
         }
 
         [TestMethod()]
-        public void SearchForMoviesByTitleTest()
+        public async Task SearchForMoviesByTitleTest()
         {
-            List<Movie> result = OMDbAPI.SearchForMoviesByTitle(null);
+            List<Movie> result = await OMDbAPI.SearchForMoviesByTitle(null);
             Assert.IsNull(result);
         }
 
         [TestMethod()]
-        public void GetMovieByImdbIDTest()
+        public async Task GetMovieByImdbIDTest()
         {
-            Assert.IsNull(OMDbAPI.GetMovieByImdbID(null));
+            Assert.IsNull(await OMDbAPI.GetMovieByImdbID(null));
         }
     }
 }

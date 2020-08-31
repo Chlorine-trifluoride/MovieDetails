@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace MovieLib
 {
@@ -22,7 +23,7 @@ namespace MovieLib
             }
         }
 
-        public List<Movie> GetCachedMovies()
+        public async Task<List<Movie>> GetCachedMovies()
         {
             if (isMemCacheLoaded) // we already loaded from file
                 return cachedMovies;
@@ -33,7 +34,7 @@ namespace MovieLib
 
             using (StreamReader reader = new StreamReader(DB_PATH))
             {   // Read the whole cache file to memory
-                jsonString = reader.ReadToEnd();
+                jsonString = await reader.ReadToEndAsync();
             }
 
             // Deseriliaze the string to a list object in memory
@@ -58,12 +59,12 @@ namespace MovieLib
         /// </summary>
         /// <param name="movie"></param>
         /// <returns>Returns true if the movie was added. False if it was not</returns>
-        public bool AddCachedMovie(Movie movie)
+        public async Task<bool> AddCachedMovie(Movie movie)
         {
             if (cachedMovies.Count < 1) // Maybe we haven't loaded the DB yet?
-                GetCachedMovies();
+                await GetCachedMovies();
 
-            if (IsMovieAlreadyInCache(movie))
+            if (await IsMovieAlreadyInCache(movie))
                 return false; // Don't add the same movie twice
 
             movie.ID = cachedMovies.Count;  // add appropriate ID to our movie
@@ -74,7 +75,7 @@ namespace MovieLib
 
             using (StreamWriter writer = new StreamWriter(DB_PATH))
             {   // Write the cache to file
-                writer.Write(jsonString);
+                await writer.WriteAsync(jsonString);
             }
 
             return true;
@@ -85,10 +86,10 @@ namespace MovieLib
         /// </summary>
         /// <param name="movie"></param>
         /// <returns>true if the movie is already in our local cache</returns>
-        private bool IsMovieAlreadyInCache(Movie movie)
+        private async Task<bool> IsMovieAlreadyInCache(Movie movie)
         {
             if (cachedMovies.Count < 1) // Maybe we haven't loaded the DB yet?
-                GetCachedMovies();
+                await GetCachedMovies();
 
             var queryResult = cachedMovies.Where(x => x.Title == movie.Title && x.Year == movie.Year);
 
@@ -99,7 +100,7 @@ namespace MovieLib
         }
 
         /// <summary> Creates and adds a Movie object with minimal info
-        public void AddCachedMovie(string title, string year, string plot, string runtime)
+        public async Task AddCachedMovie(string title, string year, string plot, string runtime)
         {
             Movie movie = new Movie
             {
@@ -109,13 +110,13 @@ namespace MovieLib
                 Runtime = runtime
             };
 
-            AddCachedMovie(movie);
+            await AddCachedMovie(movie);
         }
 
-        public void AddCachedDummyMovies()
+        public async Task AddCachedDummyMovies()
         {
-            AddCachedMovie("Fake Movie", "1985", "Things happen", "120 minutes");
-            AddCachedMovie("Horrible Movie", "2001", "Lorem ipsum", "60 minutes");
+            await AddCachedMovie("Fake Movie", "1985", "Things happen", "120 minutes");
+            await AddCachedMovie("Horrible Movie", "2001", "Lorem ipsum", "60 minutes");
         }
 
         public void ClearCache()
