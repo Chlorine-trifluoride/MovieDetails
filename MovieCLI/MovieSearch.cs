@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace MovieCLI
 {
@@ -16,12 +17,12 @@ namespace MovieCLI
             this.movieController = movieController;
         }
 
-        public void Run()
+        public async Task Run()
         {
-            DoMovieSearch();
+            await DoMovieSearch();
         }
 
-        private void DoMovieSearch(bool includeLocal = true)
+        private async Task DoMovieSearch(bool includeLocal = true)
         {
             PrintInstructions();
             string searchString = Console.ReadLine();
@@ -32,12 +33,12 @@ namespace MovieCLI
             List<Movie> foundMovies = null;
 
             if (includeLocal) // Search local cache?
-                foundMovies = SearchForMoviesLocal(searchString);
+                foundMovies = await SearchForMoviesLocal(searchString);
 
             if (foundMovies is null)
             {
                 Console.WriteLine("Movie not found in cache, starting a OMDB search");
-                foundMovies = SearchForMovieRemote(searchString);
+                foundMovies = await SearchForMovieRemote(searchString);
             }
 
             if (foundMovies is null)
@@ -100,11 +101,11 @@ namespace MovieCLI
             Console.WriteLine("Search for a movies by Title");
         }
 
-        private List<Movie> SearchForMoviesLocal(string searchString)
+        private async Task<List<Movie>> SearchForMoviesLocal(string searchString)
         {
             searchString = searchString.ToLower().StripDiacritics();  // Ignore case
 
-            List<Movie> cachedMovies = movieController.GetCachedMovies();
+            List<Movie> cachedMovies = await movieController.GetCachedMovies();
 
             if (cachedMovies is null)
                 return null;
@@ -133,9 +134,9 @@ namespace MovieCLI
             return null;
         }
 
-        private List<Movie> SearchForMovieRemote(string searchString)
+        private async Task<List<Movie>> SearchForMovieRemote(string searchString)
         {
-            List<Movie> movies = OMDbAPI.SearchForMoviesByTitle(searchString);
+            List<Movie> movies = await OMDbAPI.SearchForMoviesByTitle(searchString);
 
             if (movies is null) // no movies found
             {
@@ -160,8 +161,8 @@ namespace MovieCLI
             if (int.TryParse(input, out int selection)
                 && selection >= 0 && selection < movies.Count)
             {
-                Movie m = LoadInfoForMovie(movies[selection]);  // Load the Movie from OMDB
-                movieController.AddCachedMovie(m);              // Add Movie to local cache
+                Movie m = await LoadInfoForMovie(movies[selection]);  // Load the Movie from OMDB
+                await movieController.AddCachedMovie(m);              // Add Movie to local cache
                 Console.WriteLine($"{m.TitleYear} added to local cache");
                 List<Movie> output = new List<Movie>();         // Create a new list to return
                 output.Add(m);                                  // add single movie to the list
@@ -174,10 +175,10 @@ namespace MovieCLI
             return null;
         }
 
-        private Movie LoadInfoForMovie(Movie movie)
+        private async Task<Movie> LoadInfoForMovie(Movie movie)
         {
             // Load movie from OMDB
-            return OMDbAPI.GetMovieByImdbID(movie.IMDBID);
+            return await OMDbAPI.GetMovieByImdbID(movie.IMDBID);
         }
 
         private void PrintMovieInfo(Movie movie)

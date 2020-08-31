@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MovieLib;
 
 namespace MovieCLI
@@ -9,15 +10,15 @@ namespace MovieCLI
         private static bool quit = false;
         private static MovieController movieController;
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             movieController = new MovieController();
 
             while (!quit)
-                PrintMenu();
+                await PrintMenu();
         }
 
-        static void PrintMenu()
+        static async Task PrintMenu()
         {
             Console.Clear();
             Console.WriteLine("1) Search for a movie");
@@ -31,19 +32,19 @@ namespace MovieCLI
                 switch (Console.ReadKey(true).Key)
                 {
                     case ConsoleKey.D1:
-                        SearchForMovie();
+                        await SearchForMovie();
                         return;
 
                     case ConsoleKey.D2:
-                        PrintMovieCache();
+                        await PrintMovieCache();
                         return;
 
                     case ConsoleKey.D3:
-                        AddDummyMovies();
+                        await AddDummyMovies();
                         return;
 
                     case ConsoleKey.D4:
-                        TestConnection();
+                        await TestConnection();
                         return;
 
                     case ConsoleKey.Q:
@@ -54,9 +55,9 @@ namespace MovieCLI
             }
         }
 
-        static void TestConnection()
+        static async Task TestConnection()
         {
-            bool success = OMDbAPI.TestConnection();
+            bool success = await OMDbAPI.TestConnection();
 
             if (success)
                 Console.WriteLine("Connection established");
@@ -70,22 +71,22 @@ namespace MovieCLI
             Console.ReadKey(true);
         }
 
-        static void SearchForMovie()
+        static async Task SearchForMovie()
         {
             MovieSearch movieSearch = new MovieSearch(movieController);
-            movieSearch.Run();
+            await movieSearch.Run();
         }
 
-        static void AddDummyMovies()
+        static async Task AddDummyMovies()
         {
-            movieController.AddCachedDummyMovies();
+            await movieController.AddCachedDummyMovies();
         }
 
-        static void PrintMovieCache()
+        static async Task PrintMovieCache()
         {
             Console.Clear();
 
-            List<Movie> cachedMovies = movieController.GetCachedMovies();
+            List<Movie> cachedMovies = await movieController.GetCachedMovies();
 
             for (int i = 0; i < cachedMovies.Count; i++)
             {
