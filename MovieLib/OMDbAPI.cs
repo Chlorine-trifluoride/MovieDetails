@@ -17,22 +17,22 @@ namespace MovieLib
         private static string searchByIMDB => $"{API_URL}{API_KEY}&i=";
 
 
+        // This resource can be re-used
+        private static SafeHttpClient httpClient = new SafeHttpClient();
+
         /// <summary>
         /// Test connection, is a firewall blocking us?
         /// </summary>
         /// <returns>bool success and any thrown exception</returns>
         public static bool TestConnection()
         {
-            using (SafeHttpClient httpClient = new SafeHttpClient())
+            string url = TEST_URL;
+            using (var response = httpClient.GetAsync(url).Result)
             {
-                string url = TEST_URL;
-                using (var response = httpClient.GetAsync(url).Result)
-                {
-                    if (!response.IsSuccessStatusCode)
-                        return false; // Server error occured
+                if (!response.IsSuccessStatusCode)
+                    return false; // Server error occured
 
-                    return true;
-                }
+                return true;
             }
         }
 
@@ -45,17 +45,14 @@ namespace MovieLib
         {
             Movie movie = null;
 
-            using (SafeHttpClient httpClient = new SafeHttpClient())
+            string url = $"{searchByTitleURL}{title}";
+            using (var response = httpClient.GetAsync(url).Result)
             {
-                string url = $"{searchByTitleURL}{title}";
-                using (var response = httpClient.GetAsync(url).Result)
-                {
-                    if (!response.IsSuccessStatusCode)
-                        return null; // Server error occured
+                if (!response.IsSuccessStatusCode)
+                    return null; // Server error occured
 
-                    string apiResponse = response.Content.ReadAsStringAsync().Result;
-                    movie = JsonSerializer.Deserialize<Movie>(apiResponse);
-                }
+                string apiResponse = response.Content.ReadAsStringAsync().Result;
+                movie = JsonSerializer.Deserialize<Movie>(apiResponse);
             }
 
             return movie;
@@ -70,17 +67,14 @@ namespace MovieLib
         {
             List<Movie> movies = null;
 
-            using (SafeHttpClient httpClient = new SafeHttpClient())
+            string url = $"{searchForTitlesURL}{title}";
+            using (var response = httpClient.GetAsync(url).Result)
             {
-                string url = $"{searchForTitlesURL}{title}";
-                using (var response = httpClient.GetAsync(url).Result)
-                {
-                    if (!response.IsSuccessStatusCode)
-                        return null; // Server error occured
+                if (!response.IsSuccessStatusCode)
+                    return null; // Server error occured
 
-                    string apiResponse = response.Content.ReadAsStringAsync().Result;
-                    movies = JsonSerializer.Deserialize<MovieSearch>(apiResponse).ResultMovies;
-                }
+                string apiResponse = response.Content.ReadAsStringAsync().Result;
+                movies = JsonSerializer.Deserialize<MovieSearch>(apiResponse).ResultMovies;
             }
 
             return movies;
@@ -95,20 +89,17 @@ namespace MovieLib
         {
             Movie movie = null;
 
-            using (SafeHttpClient httpClient = new SafeHttpClient())
+            string url = $"{searchByIMDB}{imdbID}";
+            using (var response = httpClient.GetAsync(url).Result)
             {
-                string url = $"{searchByIMDB}{imdbID}";
-                using (var response = httpClient.GetAsync(url).Result)
-                {
-                    if (!response.IsSuccessStatusCode)
-                        return null; // Server error occured
+                if (!response.IsSuccessStatusCode)
+                    return null; // Server error occured
 
-                    string apiResponse = response.Content.ReadAsStringAsync().Result;
-                    movie = JsonSerializer.Deserialize<Movie>(apiResponse);
+                string apiResponse = response.Content.ReadAsStringAsync().Result;
+                movie = JsonSerializer.Deserialize<Movie>(apiResponse);
 
-                    if (movie.Title is null)    // the json did not contain a movie
-                        return null;            // possibly invalid IMDB ID
-                }
+                if (movie.Title is null)    // the json did not contain a movie
+                    return null;            // possibly invalid IMDB ID
             }
 
             return movie;
