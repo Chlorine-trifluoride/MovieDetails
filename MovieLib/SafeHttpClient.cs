@@ -16,7 +16,7 @@ namespace MovieLib
             }
             catch (Exception e)
             {
-                ErrorManager.PrintConnectionError(e);
+                Logger.LogConnectionException(e);
             }
 
             return new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway);

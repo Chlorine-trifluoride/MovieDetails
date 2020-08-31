@@ -18,6 +18,8 @@ namespace MovieLib
         {
             if (!File.Exists(DB_PATH))
             {
+                Logger.Info("CACHE", "Creating MovieCache.json file");
+
                 FileStream fs = File.Create(DB_PATH);
                 fs.Close();
             }
@@ -45,11 +47,11 @@ namespace MovieLib
             }
             catch (Exception e)
             {
-                // TODO: Add a debugger
-                Console.WriteLine($"Invalid JSON: {e.Message}");
+                Logger.Error("CACHE", "Unable to read MovieCache.json file. Empty or corrupted syntax");
                 return null;
             }
 
+            Logger.Info("CACHE", "MovieCache.json cache loaded to memory.");
             isMemCacheLoaded = true;
             return cachedMovies;
         }
@@ -77,6 +79,8 @@ namespace MovieLib
             {   // Write the cache to file
                 await writer.WriteAsync(jsonString);
             }
+
+            Logger.Info("CACHE", "Serialized movie cache to MovieCache.json from memory.");
 
             return true;
         }

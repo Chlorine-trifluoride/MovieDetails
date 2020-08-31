@@ -12,6 +12,9 @@ namespace MovieCLI
 
         static async Task Main(string[] args)
         {
+            Logger.RegisterConsoleOutput(); // The conditional only registers this in DEBUG mode
+            Logger.RegisterLogFileOutput(); // Always logged to file
+
             movieController = new MovieController();
 
             while (!quit)
