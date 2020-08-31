@@ -106,6 +106,9 @@ namespace MovieCLI
 
             List<Movie> cachedMovies = movieController.GetCachedMovies();
 
+            if (cachedMovies is null)
+                return null;
+
             // Search for exact match
             var movieQuery = from mov in cachedMovies
                     where mov.Title.ToLower().StripDiacritics() == searchString
