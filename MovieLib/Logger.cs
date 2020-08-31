@@ -53,7 +53,8 @@ namespace MovieLib
 
         private static void Add(LOGLEVEL logLevel, string tag, string message)
         {
-            LogEvent(logLevel, tag, message);
+            if (!(LogEvent is null)) // Don't call if we haven't registered any events (in MovieLibTests)
+                LogEvent(logLevel, tag, message);
         }
 
         [Conditional("DEBUG")]
