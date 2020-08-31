@@ -23,8 +23,9 @@ namespace MovieLib
 
         /// <summary>
         /// Test connection, is a firewall blocking us?
+        /// SafeHttpClient calls Logger.LogConnectionException(e) if any exceptions are raised
         /// </summary>
-        /// <returns>bool success and any thrown exception</returns>
+        /// <returns>bool successful connection</returns>
         public static async Task<bool> TestConnection()
         {
             string url = TEST_URL;
