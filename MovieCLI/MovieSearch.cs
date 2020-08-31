@@ -35,14 +35,13 @@ namespace MovieCLI
             if (includeLocal) // Search local cache?
             {
                 foundMovies = await SearchForMoviesLocal(searchString);
-                Logger.Info("CACHE", $"Found {foundMovies.Count} matches in local cache for {searchString}");
+                Logger.Info("CACHE", $"Found {foundMovies?.Count ?? 0} matches in local cache for {searchString}");
             }
 
             if (foundMovies is null)
             {
                 Console.WriteLine("Movie not found in cache, starting a OMDB search");
                 foundMovies = await SearchForMovieRemote(searchString);
-                Logger.Info("HTTP", $"Found {foundMovies.Count} matches in OMDB for {searchString}");
             }
 
             if (foundMovies is null)
@@ -149,8 +148,11 @@ namespace MovieCLI
 
             if (movies is null) // no movies found
             {
+                Logger.Warn("HTTP", $"Found 0 matches in OMDB for {searchString}");
                 return null;
             }
+
+            Logger.Info("SEARCH", $"Found {movies?.Count ?? 0} matches in OMDB for {searchString}");
 
             for (int i = 0; i < movies.Count; i++)
             {
@@ -188,7 +190,7 @@ namespace MovieCLI
         {
             // Load movie from OMDB
             var getInfoTask = OMDbAPI.GetMovieByImdbID(movie.IMDBID);
-            Logger.Info("SEARCH", $"Downloading movie detials for {movie.IDTitle} from OMDB");
+            Logger.Info("SEARCH", $"Downloading movie details for {movie.IDTitle} from OMDB");
             return await getInfoTask;
         }
 

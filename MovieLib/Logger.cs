@@ -18,7 +18,7 @@ namespace MovieLib
     public class Logger
     {
         public static event LogEventHandler LogEvent;
-        private const string LOG_FILE = @"MovieDetials.log";
+        private const string LOG_FILE = @"MovieDetails.log";
 
         public static void LogConnectionException(Exception e)
         {
