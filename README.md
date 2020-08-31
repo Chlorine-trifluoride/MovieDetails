@@ -6,7 +6,7 @@
 
 ## Info
 
-This is a .NET Core C# CLI application for searching for infomration about movies.
+This is a .NET Core C# CLI application for searching for information about movies.
 The **MovieLib** looks for matches in local JSON cache first, and if not found it uses the Open Movie Database API to search for matches there. If a match is found, the movie information is downloaded in to local JSON DB cache and then displayed to the user.
 
 ### Multiple matches
@@ -15,8 +15,17 @@ The **MovieLib** looks for matches in local JSON cache first, and if not found i
 
 ### Movie Details
 
-All the fields in **MovieLib/Movie.cs** are printed using reflection.
+All the fields in **MovieLib/Entities/Movie.cs** are printed using reflection.
 
 <img src="https://github.com/Chlorine-trifluoride/MovieDetails/raw/master/Media/reflection.png"/>
 
 <img src="https://github.com/Chlorine-trifluoride/MovieDetails/raw/master/Media/movie_info.png"/>
+
+### Logging
+
+<img src="https://github.com/Chlorine-trifluoride/MovieDetails/raw/master/Media/condition_debug.png"/>
+
+If the program is executed in **DEBUG** mode the Log is printed to the stdout and logfile.
+If the program is executed in Release mode, the log is only written in the file.
+
+<img src="https://github.com/Chlorine-trifluoride/MovieDetails/raw/master/Media/logger.png"/>
