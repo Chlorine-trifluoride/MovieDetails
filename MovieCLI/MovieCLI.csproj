@@ -9,4 +9,10 @@
     <ProjectReference Include="..\MovieLib\MovieLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\MovieCache.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
