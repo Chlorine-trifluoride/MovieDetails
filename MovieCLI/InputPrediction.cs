@@ -27,12 +27,12 @@ namespace MovieCLI
             Task loadMoviesTask = inst.LoadMovieLists();
             Task loadCharsTask = inst.LoadAllowedCharacters();
 
+            // Await all load tasks
+            await Task.WhenAll(loadMoviesTask, loadCharsTask);
+
             // Save our starting cursor position
             cursorDefaultX = Console.CursorLeft;
             cursorDefaultY = Console.CursorTop;
-
-
-            await Task.WhenAll(loadMoviesTask, loadCharsTask);
 
             // Custom input handling
             return inst.GetCustomInput();
@@ -46,6 +46,7 @@ namespace MovieCLI
             Task<List<string>> enMoviesTask = LoadMovieList(MOVIE_DATASET_PATH_EN);
             Task<List<string>> fiMoviesTask = LoadMovieList(MOVIE_DATASET_PATH_FI);
 
+            // await loading of the movie datasets
             await Task.WhenAll(enMoviesTask, fiMoviesTask);
             movieList = enMoviesTask.Result.Concat(fiMoviesTask.Result).ToArray();
 
