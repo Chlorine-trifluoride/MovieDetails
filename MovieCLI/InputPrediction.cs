@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MovieCLI
 {
@@ -20,41 +21,44 @@ namespace MovieCLI
 
         private static int cursorDefaultX, cursorDefaultY;
 
-        public static string GetUserInput()
+        public static async Task<string> GetUserInput()
         {
             // Load movie list if not already loaded
-            inst.LoadMovieLists();
-            inst.LoadAllowedCharacters();
+            Task loadMoviesTask = inst.LoadMovieLists();
+            Task loadCharsTask = inst.LoadAllowedCharacters();
 
             // Save our starting cursor position
             cursorDefaultX = Console.CursorLeft;
             cursorDefaultY = Console.CursorTop;
 
+
+            await Task.WhenAll(loadMoviesTask, loadCharsTask);
+
             // Custom input handling
             return inst.GetCustomInput();
         }
 
-        private void LoadMovieLists()
+        private async Task LoadMovieLists()
         {
             if (!(movieList is null))   // Already loaded movie list to memory
                 return;
 
-            List<string> movieNames = new List<string>();
-            movieNames.AddRange(LoadMovieList(MOVIE_DATASET_PATH_EN));
-            movieNames.AddRange(LoadMovieList(MOVIE_DATASET_PATH_FI));
+            Task<List<string>> enMoviesTask = LoadMovieList(MOVIE_DATASET_PATH_EN);
+            Task<List<string>> fiMoviesTask = LoadMovieList(MOVIE_DATASET_PATH_FI);
 
-            movieList = movieNames.ToArray();
+            await Task.WhenAll(enMoviesTask, fiMoviesTask);
+            movieList = enMoviesTask.Result.Concat(fiMoviesTask.Result).ToArray();
 
             Logger.Info("MOVIE", $"Loaded total of {movieList.Length} movie names");
         }
 
-        private List<string> LoadMovieList(string path)
+        private async Task<List<string>> LoadMovieList(string path)
         {
             Logger.Info("MOVIE", $"Loading movie list from {path} ...");
 
             try
             {
-                return File.ReadLines(path).ToList();
+                return (await File.ReadAllLinesAsync(path)).ToList();
             }
             catch (Exception e)
             {
@@ -64,7 +68,7 @@ namespace MovieCLI
             return null;
         }
 
-        private void LoadAllowedCharacters()
+        private async Task LoadAllowedCharacters()
         {
             if (!(allowedChars is null))    // Already loaded
                 return;
@@ -74,7 +78,7 @@ namespace MovieCLI
             try
             {
                 // TODO: A bit hacky
-                allowedChars = File.ReadLines(ALLOWED_CHARS_PATH)
+                allowedChars = (await File.ReadAllLinesAsync(ALLOWED_CHARS_PATH))
                     .Where(s => s.Length == 1)  // foreign language characters don't fit in a char
                     .Select(s => char.Parse(s)).ToArray();
             }

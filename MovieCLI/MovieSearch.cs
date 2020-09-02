@@ -25,7 +25,7 @@ namespace MovieCLI
         private async Task DoMovieSearch(bool includeLocal = true)
         {
             PrintInstructions();
-            string searchString = InputPrediction.GetUserInput();
+            string searchString = await InputPrediction.GetUserInput();
 
             if (searchString == string.Empty)
                 return;
