@@ -10,12 +10,20 @@ namespace MovieLib
 {
     public class MovieController
     {
+        private const string DATA_DIR = @"Data";
         private const string DB_PATH = @"Data/MovieCache.json";
         private List<Movie> cachedMovies = new List<Movie>();
         private bool isMemCacheLoaded = false;
 
         private void EnsureDBCacheFileExists()
         {
+            if (!Directory.Exists(DATA_DIR))
+            {
+                Logger.Info("CACHE", $"Creating {DATA_DIR} directory");
+
+                Directory.CreateDirectory(DATA_DIR);
+            }
+
             if (!File.Exists(DB_PATH))
             {
                 Logger.Info("CACHE", "Creating MovieCache.json file");
@@ -125,7 +133,8 @@ namespace MovieLib
 
         public void ClearCache()
         {
-            File.Delete(DB_PATH);
+            if (File.Exists(DB_PATH))
+                File.Delete(DB_PATH);
         }
     }
 }
