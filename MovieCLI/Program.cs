@@ -70,8 +70,7 @@ namespace MovieCLI
                 Console.WriteLine("Connection failure");
             }
 
-            Console.WriteLine("==== Press any key to... ====");
-            Console.ReadKey(true);
+            PressAnyKeyToContinue();
         }
 
         static async Task SearchForMovie()
@@ -91,12 +90,24 @@ namespace MovieCLI
 
             List<Movie> cachedMovies = await movieController.GetCachedMovies();
 
+            if (cachedMovies is null)
+            {
+                Logger.Error("CACHE", "Unable to print movie cache. The cache is not loaded");
+                PressAnyKeyToContinue();
+                return;
+            }
+
             for (int i = 0; i < cachedMovies.Count; i++)
             {
                 Movie m = cachedMovies[i];
                 Console.WriteLine($"{m.ID}: {m.TitleYear}");
             }
 
+            PressAnyKeyToContinue();
+        }
+
+        static void PressAnyKeyToContinue()
+        {
             Console.WriteLine("Press any key to...");
             Console.ReadKey(true);
         }
