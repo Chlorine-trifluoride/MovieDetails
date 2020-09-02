@@ -12,7 +12,8 @@ namespace MovieCLI
         private static InputPrediction inst = new InputPrediction();
         private InputPrediction() { }
 
-        private const string MOVIE_DATASET_PATH = "Data/MovieNames.txt";
+        private const string MOVIE_DATASET_PATH_EN = "Data/MovieNames.txt";
+        private const string MOVIE_DATASET_PATH_FI = "Data/MoviesFI.txt";
         private const string ALLOWED_CHARS_PATH = "Data/distinct.txt";
         private string[] movieList = null;
         private char[] allowedChars = null;
@@ -22,7 +23,7 @@ namespace MovieCLI
         public static string GetUserInput()
         {
             // Load movie list if not already loaded
-            inst.LoadMovieList();
+            inst.LoadMovieLists();
             inst.LoadAllowedCharacters();
 
             // Save our starting cursor position
@@ -33,21 +34,34 @@ namespace MovieCLI
             return inst.GetCustomInput();
         }
 
-        private void LoadMovieList()
+        private void LoadMovieLists()
         {
             if (!(movieList is null))   // Already loaded movie list to memory
                 return;
 
-            Logger.Info("MOVIE", $"Loading movie list from {MOVIE_DATASET_PATH} ...");
+            List<string> movieNames = new List<string>();
+            movieNames.AddRange(LoadMovieList(MOVIE_DATASET_PATH_EN));
+            movieNames.AddRange(LoadMovieList(MOVIE_DATASET_PATH_FI));
+
+            movieList = movieNames.ToArray();
+
+            Logger.Info("MOVIE", $"Loaded total of {movieList.Length} movie names");
+        }
+
+        private List<string> LoadMovieList(string path)
+        {
+            Logger.Info("MOVIE", $"Loading movie list from {path} ...");
 
             try
             {
-                movieList = File.ReadLines(MOVIE_DATASET_PATH).ToArray();
+                return File.ReadLines(path).ToList();
             }
             catch (Exception e)
             {
                 Logger.Error("MOVIE", $"Unable to load movie name dataset. Exception: {e.Message}");
             }
+
+            return null;
         }
 
         private void LoadAllowedCharacters()
