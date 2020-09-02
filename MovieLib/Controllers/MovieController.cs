@@ -10,7 +10,7 @@ namespace MovieLib
 {
     public class MovieController
     {
-        private const string DB_PATH = @"MovieCache.json";
+        private const string DB_PATH = @"Data/MovieCache.json";
         private List<Movie> cachedMovies = new List<Movie>();
         private bool isMemCacheLoaded = false;
 

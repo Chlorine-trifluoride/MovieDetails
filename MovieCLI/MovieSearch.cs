@@ -25,7 +25,7 @@ namespace MovieCLI
         private async Task DoMovieSearch(bool includeLocal = true)
         {
             PrintInstructions();
-            string searchString = Console.ReadLine();
+            string searchString = InputPrediction.GetUserInput();
 
             if (searchString == string.Empty)
                 return;
@@ -102,6 +102,7 @@ namespace MovieCLI
         {
             Console.Clear();
             Console.WriteLine("Search for a movies by Title");
+            Console.WriteLine("Press TAB to auto complete | ESC to return to main menu");
         }
 
         private async Task<List<Movie>> SearchForMoviesLocal(string searchString)
