@@ -9,10 +9,6 @@
 This is a .NET Core C# CLI application for searching for information about movies.
 The **MovieLib** looks for matches in local JSON cache first, and if not found it uses the Open Movie Database API to search for matches there. If a match is found, the movie information is downloaded in to local JSON DB cache and then displayed to the user.
 
-### Movie search
-
-<img src="https://github.com/Chlorine-trifluoride/MovieDetails/raw/master/Media/search.gif"/>
-
 ## Auto Complete
 
 <img src="https://github.com/Chlorine-trifluoride/MovieDetails/raw/master/Media/autocomplete.gif"/>
@@ -39,3 +35,7 @@ If the program is executed in **DEBUG** mode the Log is printed to the stdout an
 If the program is executed in Release mode, the log is only written in the file.
 
 <img src="https://github.com/Chlorine-trifluoride/MovieDetails/raw/master/Media/logger.png"/>
+
+## Movie search
+
+<img src="https://github.com/Chlorine-trifluoride/MovieDetails/raw/master/Media/search.gif"/>
