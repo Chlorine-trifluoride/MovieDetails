@@ -65,7 +65,20 @@ namespace MovieLib
 
         private static void Logger_LogEventConsole(LOGLEVEL logLevel, string tag, string message)
         {
+            switch (logLevel)   // Set console color based on loglevel
+            {
+                case LOGLEVEL.ERROR:
+                case LOGLEVEL.FATAL:
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    break;
+
+                default:
+                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    break;
+            }
+
             Console.WriteLine(GetLogFormattedString(logLevel, tag, message));
+            Console.ForegroundColor = ConsoleColor.White;   // restore console color
         }
 
         public static void RegisterLogFileOutput()
