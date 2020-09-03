@@ -1,7 +1,6 @@
 ﻿using MovieLib;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -118,8 +117,8 @@ namespace MovieCLI
 
             // Search for exact match
             var movieQuery = from mov in cachedMovies
-                    where mov.Title.ToLower().StripDiacritics() == searchString
-                    select mov;
+                             where mov.Title.ToLower().StripDiacritics() == searchString
+                             select mov;
 
             if (movieQuery.Count() > 0)
             {
@@ -128,8 +127,8 @@ namespace MovieCLI
 
             // Search for partial matches
             movieQuery = from mov in cachedMovies
-                             where mov.Title.ToLower().StripDiacritics().Contains(searchString)
-                             select mov;
+                         where mov.Title.ToLower().StripDiacritics().Contains(searchString)
+                         select mov;
 
             if (movieQuery.Count() > 0)
             {
@@ -145,7 +144,7 @@ namespace MovieCLI
             var searchTask = OMDbAPI.SearchForMoviesByTitle(searchString);
             Logger.Info("SEARCH", $"Searching for {searchString} in OMDB");
             List<Movie> movies = await searchTask;
-            
+
 
             if (movies is null) // no movies found
             {

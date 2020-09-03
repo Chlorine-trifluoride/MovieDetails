@@ -1,7 +1,6 @@
 ﻿using MovieLib;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -149,8 +148,8 @@ namespace MovieCLI
         private string GetTextPrediction(string input)
         {
             var movieQuery = from movie in movieList
-                    where movie.ToLower().StripDiacritics().StartsWith(input.StripDiacritics().ToLower())
-                    select movie;
+                             where movie.ToLower().StripDiacritics().StartsWith(input.StripDiacritics().ToLower())
+                             select movie;
 
             if (movieQuery.Count() < 1)
                 return string.Empty;
